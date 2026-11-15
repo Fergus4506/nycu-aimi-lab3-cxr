@@ -91,9 +91,10 @@ def main():
     k = e.dropna(subset=['pub'])
     fig, ax = plt.subplots(figsize=(5.6, 4.0))
     ax.scatter(k.oof, k.pub, color=BLUE, s=40, zorder=3)
-    for _, row in k.iterrows():
-        off = {'M9_r34_768': (-5, 5, 'right'), 'A3_r18_768': (-5, -9, 'right'), 'R5_geocolor_p12': (-7, -2, 'right'), 'R9_sam_768': (0, 7, 'center'), 'ENS5_R18_A3x3_R5_R6': (0, -13, 'center'), 'R6_768_geocolor': (0, -13, 'center')}.get(row.run_id, (5, 3, 'left'))  # avoid overlaps
-        name = {'R5_geocolor_p12': 'R5', 'R6_768_geocolor': 'R6', 'ENS5_R18_A3x3_R5_R6': 'ENS5_R18', 'ENS3_R5_R8_R9': 'ENS3_SAM', 'R9_sam_768': 'R9'}.get(row.run_id, row.run_id)
+    KEY = {'B0', 'M7_effv2s', 'M6_cnx_in22k', 'M9_r34_768', 'A3_r18_768', 'R4_geo_p12', 'R8_sam', 'ENS3_R5_R8_R9', 'ENS5_A3'}
+    for _, row in k[k.run_id.isin(KEY)].iterrows():  # label key points only; all values are in the report's table
+        off = {'M9_r34_768': (-5, 5, 'right'), 'A3_r18_768': (-5, -9, 'right'), 'R5_geocolor_p12': (-4, 6, 'right'), 'A4_r18_1024': (-7, -3, 'right'), 'R4_geo_p12': (-7, -2, 'right'), 'ENS3_R5_R8_R9': (0, 7, 'center'), 'R9_sam_768': (0, 7, 'center'), 'ENS5_R18_A3x3_R5_R6': (0, -13, 'center'), 'R6_768_geocolor': (0, -13, 'center')}.get(row.run_id, (5, 3, 'left'))  # avoid overlaps
+        name = {'R5_geocolor_p12': 'R5', 'R6_768_geocolor': 'R6', 'ENS5_R18_A3x3_R5_R6': 'ENS5_R18', 'ENS3_R5_R8_R9': 'ENS3_SAM (final)', 'R9_sam_768': 'R9', 'A4_r18_1024': 'A4', 'R4_geo_p12': 'R4', 'M7_effv2s': 'M7'}.get(row.run_id, row.run_id)
         ax.annotate(name, (row.oof, row.pub), textcoords='offset points', xytext=off[:2], ha=off[2], fontsize=7.5, color=INK2)
     lo, hi = 0.81, 0.89
     ax.plot([lo, hi], [lo, hi], color=GRAY, lw=1, ls='--')
