@@ -1,0 +1,23 @@
+.venv/
+__pycache__/
+*.pyc
+data/
+outputs/
+submissions/
+*.pt
+*.pth
+*.ckpt
+.env
+.env.*
+kaggle.json
+*token*.json
+.library-transfer-temp/
+# competition data and course material (not redistributable)
+*.zip
+spec.pdf
+test_data_sample.csv
+# internal working notes and the report (submitted to E3 separately)
+HANDOFF.md
+LAB3_PLAN.md
+COMPETITION_CHECK.md
+report/

@@ -1,0 +1,7 @@
+# Requested dependencies; NOT a verified lockfile. Install in .venv only.
+# First install CUDA wheels using the separate command in README.md.
+timm
+scikit-learn
+pandas
+opencv-python
+matplotlib
