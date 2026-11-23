@@ -64,4 +64,4 @@ OOF 最高的集成（R5＋R8＋R9）：
 | `run_overnight.ps1`、`run_backbones.ps1` | 依序執行多個實驗的佇列（已完成的會跳過） |
 | `experiments.csv` | 全部實驗的 OOF 分數與 Kaggle public 分數 |
 
-主要指標是全部 4,726 張 train＋val 影像的 OOF macro-F1。public 排行榜只有約 591 張，雜訊太大，不用來挑模型。
+主要指標是全部 4,726 張 train＋val 影像的 OOF macro-F1。public 排行榜只有約 591 張，雜訊太大，比較模型時以 OOF 為主；最終提交選 R4 的取捨見報告 4.9 節。

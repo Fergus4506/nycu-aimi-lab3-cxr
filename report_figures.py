@@ -3,6 +3,7 @@
 Example:  .venv\\Scripts\\python.exe report_figures.py
 Writes outputs/report/: resolution_trend.png, experiments_oof.png, confusion_final.png, oof_vs_public.png
 """
+import json
 from pathlib import Path
 
 import matplotlib
@@ -34,6 +35,10 @@ def main():
     OUT.mkdir(parents=True, exist_ok=True)
     e = pd.read_csv(ROOT / 'experiments.csv', dtype=str)
     e['oof'] = e.oof_macro_f1.astype(float)
+    for i, rid in e.run_id.items():  # full-precision OOF so labels round like the report tables
+        m = ROOT / 'outputs' / rid / 'metrics.json'
+        if m.exists():
+            e.loc[i, 'oof'] = json.loads(m.read_text())['oof_macro_f1']
     e['pub'] = e.kaggle.map(lambda s: score(str(s).lstrip('~')) if isinstance(s, str) else np.nan)
     e['std'] = e.fold_mean_std.str.split('±').str[1].astype(float)
     r = e.set_index('run_id')
