@@ -2,7 +2,7 @@
 
 把兒童／成人胸腔 X 光分成 normal、bacteria、virus、COVID-19 四類，評分指標為 macro-F1。
 
-最終提交是三組 ImageNet 預訓練 ResNet18 的集成（R5＋R8＋R9，共 15 個模型的機率平均）：5-fold OOF macro-F1 0.887，Kaggle public 0.877。只使用官方提供的資料，沒有使用外部 CXR 資料或 CXR 預訓練權重。
+最終提交是 ImageNet 預訓練 ResNet18（輸入 512、幾何增強、patience 12）的 5-fold 模型平均（R4_geo_p12）：OOF macro-F1 0.874，Kaggle public 0.878。OOF 最高的設定是三組 ResNet18 的集成（R5＋R8＋R9，OOF 0.887，public 0.877），指令也列在下面。只使用官方提供的資料，沒有使用外部 CXR 資料或 CXR 預訓練權重。
 
 ## 環境
 
@@ -36,13 +36,20 @@ test_data_sample.csv     （放在專案根目錄）
 ## 重現最終提交
 
 ```powershell
+.\.venv\Scripts\python.exe train.py --run R4_geo_p12 --model resnet18 --size 512 --bs 24 --aug geo --patience 12 --epochs 40
+.\.venv\Scripts\python.exe predict.py --runs R4_geo_p12 --name R4_geo_p12
+```
+
+RTX 4070 上約 45 分鐘。`predict.py` 會檢查提交檔格式（欄位、1,182 列、順序與 sample 一致、每列恰好一個 1），且不覆寫已存在的檔案。
+
+OOF 最高的集成（R5＋R8＋R9）：
+
+```powershell
 .\.venv\Scripts\python.exe train.py --run R5_geocolor_p12 --model resnet18 --size 512 --bs 24 --aug geo_color --patience 12 --epochs 40
 .\.venv\Scripts\python.exe train.py --run R8_sam --model resnet18 --size 512 --bs 24 --aug geo_color --patience 12 --epochs 40 --sam 0.05
 .\.venv\Scripts\python.exe train.py --run R9_sam_768 --model resnet18 --size 768 --bs 24 --patience 12 --epochs 40 --sam 0.05
 .\.venv\Scripts\python.exe predict.py --runs R5_geocolor_p12 R8_sam R9_sam_768 --name ENS3_R5_R8_R9
 ```
-
-RTX 4070 上三組分別約 62、76、129 分鐘。`predict.py` 會檢查提交檔格式（欄位、1,182 列、順序與 sample 一致、每列恰好一個 1），且不覆寫已存在的檔案。
 
 ## 檔案
 

@@ -18,7 +18,7 @@ ROOT = Path(__file__).resolve().parent
 OUT = ROOT / 'outputs/report'
 BLUE, ORANGE, GRAY, INK, INK2 = '#2a78d6', '#eb6834', '#9a9893', '#0b0b0b', '#52514e'
 SEEDS = ['A3_r18_768', 'S2_A3_seed1', 'S2_A3_seed2']   # ResNet18@768, 3 seeds (resolution plot)
-FINAL = ['R5_geocolor_p12', 'R8_sam', 'R9_sam_768']    # final submission ENS3_R5_R8_R9
+FINAL = ['R4_geo_p12']    # final submission R4_geo_p12
 P = [f'p_{c}' for c in CLASSES]
 
 plt.rcParams.update({'font.size': 10, 'axes.edgecolor': GRAY, 'axes.labelcolor': INK2, 'xtick.color': INK2,
@@ -70,7 +70,7 @@ def main():
     ax.grid(axis='y', visible=False)
     fig.tight_layout(); fig.savefig(OUT / 'experiments_oof.png', dpi=160, bbox_inches='tight'); plt.close(fig)
 
-    # 3) confusion matrix of the final ensemble (OOF, mean of its 3 runs)
+    # 3) confusion matrix of the final submission (OOF)
     d = [pd.read_csv(ROOT / 'outputs' / k / 'oof.csv').sort_values('new_filename') for k in FINAL]
     yt = d[0].label.values
     yp = np.mean([x[P].values for x in d], 0).argmax(1)
@@ -83,7 +83,7 @@ def main():
             ax.text(j, i, f'{cm[i, j]}\n{rec[i, j]:.0%}', ha='center', va='center', fontsize=8,
                     color='white' if rec[i, j] > 0.55 else INK)
     ax.set(xticks=range(4), yticks=range(4), xticklabels=CLASSES, yticklabels=CLASSES, xlabel='predicted',
-           ylabel='true', title='OOF confusion, final ensemble (R5+R8+R9)')
+           ylabel='true', title='OOF confusion, final model R4 (R18@512, geo aug)')
     ax.grid(False)
     fig.tight_layout(); fig.savefig(OUT / 'confusion_final.png', dpi=160, bbox_inches='tight'); plt.close(fig)
 
@@ -93,8 +93,8 @@ def main():
     ax.scatter(k.oof, k.pub, color=BLUE, s=40, zorder=3)
     KEY = {'B0', 'M7_effv2s', 'M6_cnx_in22k', 'M9_r34_768', 'A3_r18_768', 'R4_geo_p12', 'R8_sam', 'ENS3_R5_R8_R9', 'ENS5_A3'}
     for _, row in k[k.run_id.isin(KEY)].iterrows():  # label key points only; all values are in the report's table
-        off = {'M9_r34_768': (-5, 5, 'right'), 'A3_r18_768': (-5, -9, 'right'), 'R5_geocolor_p12': (-4, 6, 'right'), 'A4_r18_1024': (-7, -3, 'right'), 'R4_geo_p12': (-7, -2, 'right'), 'ENS3_R5_R8_R9': (0, 7, 'center'), 'R9_sam_768': (0, 7, 'center'), 'ENS5_R18_A3x3_R5_R6': (0, -13, 'center'), 'R6_768_geocolor': (0, -13, 'center')}.get(row.run_id, (5, 3, 'left'))  # avoid overlaps
-        name = {'R5_geocolor_p12': 'R5', 'R6_768_geocolor': 'R6', 'ENS5_R18_A3x3_R5_R6': 'ENS5_R18', 'ENS3_R5_R8_R9': 'ENS3_SAM (final)', 'R9_sam_768': 'R9', 'A4_r18_1024': 'A4', 'R4_geo_p12': 'R4', 'M7_effv2s': 'M7'}.get(row.run_id, row.run_id)
+        off = {'M9_r34_768': (-5, 5, 'right'), 'A3_r18_768': (-5, -9, 'right'), 'R5_geocolor_p12': (-4, 6, 'right'), 'A4_r18_1024': (-7, -3, 'right'), 'R4_geo_p12': (0, 8, 'center'), 'M6_cnx_in22k': (-6, 3, 'right'), 'ENS3_R5_R8_R9': (0, 7, 'center'), 'R9_sam_768': (0, 7, 'center'), 'ENS5_R18_A3x3_R5_R6': (0, -13, 'center'), 'R6_768_geocolor': (0, -13, 'center')}.get(row.run_id, (5, 3, 'left'))  # avoid overlaps
+        name = {'R5_geocolor_p12': 'R5', 'R6_768_geocolor': 'R6', 'ENS5_R18_A3x3_R5_R6': 'ENS5_R18', 'ENS3_R5_R8_R9': 'ENS3_SAM', 'R9_sam_768': 'R9', 'A4_r18_1024': 'A4', 'R4_geo_p12': 'R4 (final)', 'M7_effv2s': 'M7'}.get(row.run_id, row.run_id)
         ax.annotate(name, (row.oof, row.pub), textcoords='offset points', xytext=off[:2], ha=off[2], fontsize=7.5, color=INK2)
     lo, hi = 0.81, 0.89
     ax.plot([lo, hi], [lo, hi], color=GRAY, lw=1, ls='--')
